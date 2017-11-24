@@ -39,6 +39,8 @@ Params:
 bot - equal to self, instance of bot calling
 update - updateevent passed from Updater
 args - arguments given (coinname / coin-symbol in this case
+
+TODO: Write a basemethod to get bitcoin base price in usd, then use that value or convert to other currencies such as eur 
 """
 def usd(bot,update,args):
 	print(args)
@@ -71,11 +73,30 @@ def satoshi(bot,update,args):
 						,text="Price in BTC:\n"+str(btc_price)+"\nPrice in Satoshi:\n"+str(sat_price))
 	except Exception as e:
 		bot.send_message(chat_id=update.message.chat_id
-						,text="Fachsprache") 
+						,text="Scheisendreck, wieder ein Fehler.") 
 		logging.warning(e)
 
 satoshi_handler= CommandHandler('satoshi',satoshi,pass_args=True)
 dispatcher.add_handler(satoshi_handler)
+
+"""
+Function to get current market stats
+
+Params:
+bot - euqal to self, instance of bot calling
+update - updateevent passed from Updater
+"""
+def stats(bot,update):
+	try:
+		stats=cryptomarket.stats()
+		bot.send_message(chat_id=update.message.chat_id
+						,text=str(stats))
+	except Exception as e:
+		bot.send_message(chat_id=update.message.chat_id
+						,text="Could not get stats. Try again later.")
+
+stats_handler=CommandHandler('stats',stats)
+dispatcher.add_handler(stats_handler)
 
 
 

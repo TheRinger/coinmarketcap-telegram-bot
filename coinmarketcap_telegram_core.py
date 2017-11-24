@@ -86,6 +86,7 @@ class CryptoMarket(object):
     #Internal method to access coinmarketcap API with given endpoint, typically a coin
     def __call_market(self, endpoint, params):
         try:
+            print(str(endpoint))
             response = requests.get(
                 self.__COIN_MARKET_CAP_URL + endpoint, params=params)
             if response.status_code != '200':
@@ -99,7 +100,7 @@ class CryptoMarket(object):
     def coin(self,  coin_id, **kwargs):
         params = {}
         params.update(**kwargs)
-        data = self.__call_market('ticker/{coin_id}'.format(coin_id=coin_id), params)
+        data = self.__call_market('ticker/'+coin_id, params)
         if 'error' in data:
             return 'Error occurred'
         coin = data[0]

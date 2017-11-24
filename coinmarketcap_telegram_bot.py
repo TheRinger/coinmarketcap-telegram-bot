@@ -10,7 +10,7 @@ from requests import HTTPError
 
 
 
-updater= Updater(token="450598796:AAF5nKRLw47lCWqHH2K1PXqBlpBRcyZ1VP0")
+updater= Updater()
 dispatcher=updater.dispatcher
 cryptomarket=coinmarketcap_telegram_core.CryptoMarket()
 

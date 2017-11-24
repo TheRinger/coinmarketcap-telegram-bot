@@ -7,13 +7,23 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.INFO)
 #Errorhandling
 from requests import HTTPError
+#reading TG-API-Token from file
+with open('token.txt','r') as tokenfile:
+	token= tokenfile.readline()
 
-
-
-updater= Updater()
+#Initialize TG-Updater, TG-message-dispatcher, cryptomarket from coinmarketcap_telegram_core
+updater= Updater(token)
 dispatcher=updater.dispatcher
 cryptomarket=coinmarketcap_telegram_core.CryptoMarket()
 
+
+"""
+Start function needed for the bot in order to be able to introduce itself
+
+Params:
+bot - equal to self, instance of bot calling
+update - updateevent passed from Updater
+"""
 def start(bot,update):
 	bot.send_message(chat_id=update.message.chat_id
 					,text="I'm the Coinmarketcap Bot.")
@@ -21,6 +31,15 @@ def start(bot,update):
 start_handler = CommandHandler('start',start)
 dispatcher.add_handler(start_handler)
 
+
+"""
+Function to convert given coinname / coin symbol to it's usd price
+
+Params:
+bot - equal to self, instance of bot calling
+update - updateevent passed from Updater
+args - arguments given (coinname / coin-symbol in this case
+"""
 def usd(bot,update,args):
 	print(args)
 	print(type(args))
@@ -36,8 +55,29 @@ usd_handler= CommandHandler('usd',usd,pass_args=True)
 dispatcher.add_handler(usd_handler)
 
 
+"""
+Function to convert given coinname / coin symbol to it's price in satoshi
+
+Params:
+bot - equal to self, instance of bot calling
+update - updateevent passed from Updater
+args - arguments given (coinname / coin-symbol in this case
+"""
 def satoshi(bot,update,args):
 	try:
 		btc_price=cryptomarket.coin(args[0]).price_btc
-		sat_price=float(price_btc)/0.00000001 
+		sat_price=float(btc_price)/0.00000001
+		bot.send_message(chat_id=update.message.chat_id
+						,text="Price in BTC:\n"+str(btc_price)+"\nPrice in Satoshi:\n"+str(sat_price))
+	except Exception as e:
+		bot.send_message(chat_id=update.message.chat_id
+						,text="Fachsprache") 
+		logging.warning(e)
+
+satoshi_handler= CommandHandler('satoshi',satoshi,pass_args=True)
+dispatcher.add_handler(satoshi_handler)
+
+
+
+#Start the bot
 updater.start_polling()

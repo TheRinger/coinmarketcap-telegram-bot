@@ -48,6 +48,9 @@ class Coin(object):
     def __repr__(self):
         return "Coin"
 
+    def get_price_btc(self):
+        return self.price_btc
+
 """Class representing current market stats, providing information such as Bitcoin's market percentage (USD), number of active assets, etc."""
 class Stats(object):
 

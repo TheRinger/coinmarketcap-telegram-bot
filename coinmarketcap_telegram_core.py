@@ -1,4 +1,5 @@
 import requests
+import logging
 
 """Class to represent each coin as a object. Contains useful values such as a unique id, name, symbol, etc."""
 class Coin(object):
@@ -70,12 +71,12 @@ class Stats(object):
 
     #Classmethod for string representation of a coin 
     def __str__(self):
-        statistics = " Market value: %s$" % self.total_market_usd
-        statistics += "\n Bitcoin percentage: %s" % self.btc_market_percent
+        statistics =  "   Market value: %s" % self.total_market_usd + " Billion USD"
+        statistics += "\n Bitcoin share: %s" % self.btc_market_percent
         statistics += "\n Active markets: %s" % self.active_market
         statistics += "\n Active assets: %s" % self.active_assets
         statistics += "\n Active currencies: %s" % self.active_currencies
-        statistics += "\n Last day changes: %s" % self.last_day_volume_usd
+        statistics += "\n Last 24h volume: %s" % self.last_day_volume_usd
         return statistics
 
     def __repr__(self):
@@ -89,7 +90,10 @@ class CryptoMarket(object):
     #Internal method to access coinmarketcap API with given endpoint, typically a coin
     def __call_market(self, endpoint, params):
         try:
+            #LOGGING AND DEBUGGING
             print(str(endpoint))
+            logging.info("Trying to get API request from "+__COIN_MARKET_CAP_URL+endpoint)
+
             response = requests.get(
                 self.__COIN_MARKET_CAP_URL + endpoint, params=params)
             if response.status_code != '200':
@@ -121,7 +125,7 @@ class CryptoMarket(object):
         data = self.__call_market('global', params)
         if 'error' in data:
             return 'Error occurred'
-        return Stats(data['total_market_cap_usd'],
-                     data['bitcoin_percentage_of_market_cap'],
+        return Stats(data['bitcoin_percentage_of_market_cap'],
+                     data['total_market_cap_usd'],
                      data['active_markets'], data['active_assets'],
                      data['active_currencies'], data['total_24h_volume_usd'])

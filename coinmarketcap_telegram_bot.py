@@ -101,4 +101,4 @@ dispatcher.add_handler(stats_handler)
 
 
 #Start the bot
-updater.start_polling()
+updater.start_polling(poll_interval=1.0,timeout=20)
